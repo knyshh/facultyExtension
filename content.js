@@ -44,11 +44,6 @@ let msalInstanceContent = new msal.PublicClientApplication({
 console.log('msal', msalInstanceContent);
 console.log('msal.getAllAccounts', msalInstanceContent.getAllAccounts()[0]); //undefined
 
-chrome.storage.local.get('Accounts', function(data) {
-	console.log('accounts',data);
-	getBearerToken({data});
-});
-
 const getBearerToken = (account) => {
 	if (account) {
 		const tokenRequest = {
@@ -68,6 +63,11 @@ const getBearerToken = (account) => {
 	throw new Error('Not Authenticated');
 };
 
+
+chrome.storage.local.get('Accounts', function(data) {
+	console.log('accounts',data);
+	getBearerToken({data});
+});
 
 window.addEventListener('click', function (e) {
 	if (e.target.tagName == "A" && e.target.classList.toString().indexOf('save-thread-comment') > -1) {
