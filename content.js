@@ -140,15 +140,6 @@ async function sendWebMessage(type, data) {
 // }
 
 
-// if (!signedIn) {
-//
-//
-// 	.then(() => { sendWebMessage("API_TEST", { NeoId: "6765294", AssignmentId: "12785489" }); });
-// // }
-// sendWebMessage("API_TEST", { NeoId: "6765294", AssignmentId: "12785489" });
-
-
-
 // //fix error Extension context invalidated
 // var port;
 // // Attempt to reconnect
