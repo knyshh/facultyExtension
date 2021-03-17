@@ -20,9 +20,9 @@ function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
 
 chrome.storage.local.remove('Grading');
 
-chrome.storage.local.get('BearerToken', function(data) {
-	console.log('from local storage token',data);
-});
+// chrome.storage.local.get('BearerToken', function(data) {
+// 	console.log('from local storage token',data.BearerToken);
+// });
 chrome.storage.local.get('msalInstanceTest', function(data) {
 	console.log('msalInstanceTest',data); //its empty
 });

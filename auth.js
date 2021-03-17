@@ -17,7 +17,7 @@ let msalInstance = new msal.PublicClientApplication({
 	}
 });
 
-chrome.storage.local.set({ 'msalInstanceTest': msalInstance }, function() {console.log('msal is set to localstorage')});
+chrome.storage.local.set({ msalInstanceTest: msalInstance }, function() {console.log('msal is set to localstorage')});
 
 /*** Sign in button */
 document.getElementById("sign-in").addEventListener("click", async () => {
@@ -177,7 +177,7 @@ if (accounts && accounts.length) {
 if (!signedIn) {
 
 	login()
-	// This is for debugging. Remove once working
+	// // This is for debugging. Remove once working
 		.then(() => { sendWebMessage("API_TEST", { NeoId: "6765294", AssignmentId: "12785489" }); });
 }
 

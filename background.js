@@ -31,14 +31,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		case "API_TEST": {
 
 			chrome.storage.local.get('BearerToken', (result) => {
-				const token = localStorage.getItem('BearerToken');
-				console.log('sender.url', sender.url, message.data, message.type, token);
+				console.log('sender.url', sender.url, message.data, message.type,  result.BearerToken);
 
 				fetch("https://admin.qa.nexford.net/api/neo/grading/start", {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${token}`,
+						'Authorization': `Bearer ${result.BearerToken}`,
 					},
 					body: JSON.stringify(message.data),
 				}).then(() => {
@@ -46,7 +45,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 					sendResponse({message: 'success', success: true });
 				})
 					.catch(error => {
-						console.log('error');
 						console.error('error:', error);
 						sendResponse({message: 'success', success: false });
 					});
