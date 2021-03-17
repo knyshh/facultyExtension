@@ -24,13 +24,11 @@ chrome.storage.local.get('BearerToken', function(data) {
 	console.log('from local storage token',data);
 });
 chrome.storage.local.get('msalInstanceTest', function(data) {
-	console.log('msalInstanceTest',data); //its empty now
+	console.log('msalInstanceTest',data); //its empty
 });
 
 ///new instance !!!  and new redirect url  ?
-const redirect = typeof chrome !== "undefined" && chrome.identity ?
-	chrome.identity.getRedirectURL() :
-	`${window.location.href}`;
+const redirect = 'https://inpncpppbajgklekajknpmmibgdpcnad.chromiumapp.org';
 
 let msalInstanceContent = new msal.PublicClientApplication({
 	auth: {
@@ -44,7 +42,7 @@ let msalInstanceContent = new msal.PublicClientApplication({
 	}
 });
 console.log('msal', msalInstanceContent);
-console.log('msal', msalInstanceContent.getAllAccounts()[0]); //give me error
+console.log('msal.getAllAccounts', msalInstanceContent.getAllAccounts()[0]); //undefined
 
 chrome.storage.local.get('Accounts', function(data) {
 	console.log('accounts',data);
@@ -69,8 +67,6 @@ const getBearerToken = (account) => {
 	}
 	throw new Error('Not Authenticated');
 };
-
-
 
 
 window.addEventListener('click', function (e) {
