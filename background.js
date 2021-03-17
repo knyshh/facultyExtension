@@ -6,14 +6,14 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 	if(tab.url && tab.url.includes('teacher_dropbox_assignment/grade') && changeInfo.status === 'complete') {
 		chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 			// for(var i= 0; i < tabs.length; i++) {
-				if (tabs.length && tabs[0].id) {
-					chrome.tabs.executeScript(tabs[0].id, {
-						file: 'content.js',
-						runAt: 'document_start'
-					}, () => {
-						// console.log('content.js is injected when update page')
-					});
-				}
+			// 	if (tabs.length && tabs[0].id) {
+			// 		chrome.tabs.executeScript(tabs[0].id, {
+			// 			file: 'content.js',
+			// 			runAt: 'document_start'
+			// 		}, () => {
+			// 			// console.log('content.js is injected when update page')
+			// 		});
+			// 	}
 			// }
 		});
 	}

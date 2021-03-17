@@ -23,19 +23,16 @@ chrome.storage.local.remove('Grading');
 // chrome.storage.local.get('BearerToken', function(data) {
 // 	console.log('from local storage token',data.BearerToken);
 // });
-chrome.storage.local.get('msalInstanceTest', function(data) {
-	console.log('msalInstanceTest',data); //its empty
-});
 
 ///new instance !!!  and new redirect url  ?
-const redirect = 'https://inpncpppbajgklekajknpmmibgdpcnad.chromiumapp.org';
+// const redirect = 'https://inpncpppbajgklekajknpmmibgdpcnad.chromiumapp.org';
 
 let msalInstanceContent = new msal.PublicClientApplication({
 	auth: {
 		authority: "https://login.microsoftonline.com/bdf1795a-c7bb-4599-bac9-f8d3335bef69",
 		clientId: "22473745-b0f0-43af-98c1-eea2ab47088e",
-		redirect,
-		postLogoutRedirectUri: redirect
+		redirectUri: "https://inpncpppbajgklekajknpmmibgdpcnad.chromiumapp.org",
+		postLogoutRedirectUri: "https://inpncpppbajgklekajknpmmibgdpcnad.chromiumapp.org"
 	},
 	cache: {
 		cacheLocation: "localStorage"
@@ -44,7 +41,7 @@ let msalInstanceContent = new msal.PublicClientApplication({
 console.log('msal', msalInstanceContent);
 console.log('msal.getAllAccounts', msalInstanceContent.getAllAccounts()[0]); //undefined
 
-const getBearerToken = (account) => {
+const getBearerToken = async (account) => {
 	if (account) {
 		const tokenRequest = {
 			scopes: ["api://nxutestadmin/user_impersonation"],
@@ -55,7 +52,8 @@ const getBearerToken = (account) => {
 			return response.accessToken;
 		} catch (error) {
 			if (error.name === 'InteractionRequiredAuthError') {
-				msalInstanceContent.acquireTokenRedirect(tokenRequest);
+				// msalInstance.acquireTokenRedirect(tokenRequest);
+				console.log('InteractionRequiredAuthError');
 			}
 			throw error;
 		}
@@ -63,10 +61,13 @@ const getBearerToken = (account) => {
 	throw new Error('Not Authenticated');
 };
 
-
+async function sendMessage(account) {
+	const token = await getBearerToken(account);
+	console.log('test token',token);
+}
 chrome.storage.local.get('Accounts', function(data) {
 	console.log('accounts',data);
-	getBearerToken({data});
+	sendMessage(data);
 });
 
 window.addEventListener('click', function (e) {
@@ -84,60 +85,6 @@ window.addEventListener('click', function (e) {
 
 }, false);
 
-
-
-// const getBearerToken = async () => {
-// 	const msalInstance = localStorage.getItem('msalInstanceTest');
-// 	chrome.storage.local.get('msalInstanceTest', (result) => {
-// 		console.log('result', result)
-// 	});
-// 	if (msalInstance.getAllAccounts()[0]) {
-// 		const tokenRequest = {
-// 			scopes: [ "api://nxutestadmin/user_impersonation" ], // from admin-ui test and this and this
-// 			account: msalInstance.getAllAccounts()[0]
-// 		};
-// 		try {
-// 			const response = await msalInstance.acquireTokenSilent(tokenRequest);
-// 			// chrome.storage.local.set({ 'BearerToken': response.accessToken }, function() {});
-// 			// localStorage.setItem('BearerToken', response.accessToken );
-// 			return response.accessToken;
-// 		} catch (error) {
-// 			if (error.name === 'InteractionRequiredAuthError') {
-// 				msalInstance.acquireTokenRedirect(tokenRequest);
-// 			}
-// 			chrome.storage.local.remove('BearerToken', function() {});
-// 			throw error;
-// 		}
-// 	}
-// 	throw new Error('Not Authenticated');
-// };
-
-async function sendWebMessage(type, data) {
-	// console.log('send msg');
-	// const token = await getBearerToken();
-	// console.log('token', token);
-	// chrome.runtime.sendMessage({ type, data, token }, response => console.log('sendWebMessage success',response));
-}
-
-// let signedIn = false;
-// const accounts = msalInstance.getAllAccounts();
-// if (accounts && accounts.length) {
-// 	const foo = {
-// 		scopes: [ 'api://nxutestadmin/user_impersonation' ],
-// 		account: accounts[0]
-// 	};
-// 	msalInstance.acquireTokenSilent({ foo }).then((res) => {
-// 		console.log('Silent Login Success: ', res)
-//
-// 		// set token in sessionStorage
-// 		const { username, name } = res;
-// 		// document.getElementById("username").innerHTML = 'acquired silently ' + username;
-// 		// document.getElementById("displayname").innerHTML = name;
-// 		// document.getElementById("user-block").style.display = "block";
-// 		signedIn = true;
-// 	})
-// 		.catch((err) => console.log(err))
-// }
 
 
 // //fix error Extension context invalidated

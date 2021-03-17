@@ -17,8 +17,6 @@ let msalInstance = new msal.PublicClientApplication({
 	}
 });
 
-chrome.storage.local.set({ msalInstanceTest: msalInstance }, function() {console.log('msal is set to localstorage')});
-
 /*** Sign in button */
 document.getElementById("sign-in").addEventListener("click", async () => {
 	await login();
