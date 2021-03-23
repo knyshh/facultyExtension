@@ -1,5 +1,6 @@
 console.log('auth');
 
+//chrome.runtime.reload(); TODO: !
 // Set the redirect URI to the chromiumapp.com provided by Chromium
 const redirectUri = typeof chrome !== "undefined" && chrome.identity ?
 	chrome.identity.getRedirectURL() :
@@ -17,21 +18,6 @@ let msalInstance = new msal.PublicClientApplication({
 	}
 });
 
-/*** Sign in button */
-document.getElementById("sign-in").addEventListener("click", async () => {
-	await login();
-});
-
-/*** Sign out button*/
-document.getElementById("sign-out").addEventListener("click", async () => {
-	const logoutUrl = await getLogoutUrl();
-	await launchWebAuthFlow(logoutUrl);
-
-	// chrome.runtime.sendMessage({ message: "logout", payload: { result: null } }, function() {});
-	document.getElementById("username").innerHTML = "";
-	document.getElementById("displayname").innerHTML = "";
-	document.getElementById("user-block").style.display = "none";
-});
 
 async function getLoginUrl(request, reject) {
 	return new Promise((resolve) => {
@@ -45,28 +31,42 @@ async function getLoginUrl(request, reject) {
 	});
 }
 
-async function getLogoutUrl(request) {
-	return new Promise((resolve, reject) => {
-		msalInstance.logout({
-			...request,
-			onRedirectNavigate: (url) => {
-				resolve(url);
-				return false;
-			}
-		}).catch(reject);
-	});
-}
-
 async function login() {
 	document.getElementById("user-block").style.display = "block";
 	document.getElementById("username").innerHTML = '...';
-	document.getElementById("displayname").innerHTML = '...';
+	document.getElementById("statusinfo").innerHTML = '...';
 
 	const url = await getLoginUrl();
-	const result = await launchWebAuthFlow(url);
+	const { account } = await launchWebAuthFlow(url);
+	document.getElementById("username").innerHTML = `${account.name} (${account.username})`;
 
-	document.getElementById("username").innerHTML = result.account.username;
-	document.getElementById("displayname").innerHTML = result.account.name;
+	const bearerToken = await getBearerToken();
+	console.log('bearer token', bearerToken);
+
+	let getTokenUrl = "https://admin.qa.nexford.net/api/neo/token";
+	chrome.storage.local.get('token', (result) => {
+		if (result && result.token) {
+			getTokenUrl += '/' + result.token;
+		}
+		fetch(getTokenUrl, { headers: { 'Authorization': `Bearer ${bearerToken}` } })
+			.then(response => response.json())
+			.then(json => {
+				chrome.storage.local.set({ 'token': json.Token }, function() {
+					document.getElementById("statusinfo").innerHTML = 'Installation complete';
+
+					// FOR DEBUG ONLY 👇🏻
+					const data = { NeoId: "6765294", AssignmentId: "12785489" };
+					chrome.runtime.sendMessage({ type: "API_TEST", data });
+					// FOR DEBUG ONLY 👆🏻
+					console.log('token!!', result.token)
+
+					console.log('new token is set');
+				});
+			})
+			.catch(error => {
+				alert(JSON.stringify(error))
+			});
+	});
 }
 
 /**
@@ -102,38 +102,15 @@ async function launchWebAuthFlow(url) {
 	})
 }
 
-/**
- * Returns the user sign into the browser.
- */
-async function getSignedInUser() {
-	return new Promise((resolve, reject) => {
-		if (chrome && chrome.identity) {
-			// Running in extension popup
-			chrome.identity.getProfileUserInfo((user) => {
-				if (user) {
-					resolve(user);
-				} else {
-					resolve(null);
-				}
-			});
-		} else {
-			// Running on localhost
-			resolve(null);
-		}
-	})
-}
-
-
 const getBearerToken = async () => {
-	 if (msalInstance.getAllAccounts()[0]) {
+	if (msalInstance.getAllAccounts()[0]) {
 		const tokenRequest = {
 			scopes: [ "api://nxutestadmin/user_impersonation" ], // from admin-ui test and this and this
 			account: msalInstance.getAllAccounts()[0]
 		};
 		try {
 			const response = await msalInstance.acquireTokenSilent(tokenRequest);
-			chrome.storage.local.set({ 'BearerToken': response.accessToken }, function() {});
-			chrome.storage.local.set({ 'Accounts': msalInstance.getAllAccounts()[0] }, function() {});
+			chrome.storage.local.set({ 'BearerToken': response.accessToken }, () => {console.log('BearerToken set')});
 			return response.accessToken;
 		} catch (error) {
 			if (error.name === 'InteractionRequiredAuthError') {
@@ -146,44 +123,7 @@ const getBearerToken = async () => {
 	throw new Error('Not Authenticated');
 };
 
-async function sendWebMessage(type, data) {
-	const token = await getBearerToken();
-	chrome.runtime.sendMessage({ type, data, token }, response => console.log('sendWebMessage success',response));
-}
-
-// why is accounts always null?
-let signedIn = false;
-const accounts = msalInstance.getAllAccounts();
-if (accounts && accounts.length) {
-	const foo = {
-		scopes: [ 'api://nxutestadmin/user_impersonation' ],
-		account: accounts[0]
-	};
-	msalInstance.acquireTokenSilent({ foo }).then((res) => {
-		console.log('Silent Login Success: ', res)
-
-		// set token in sessionStorage
-		const { username, name } = res;
-		document.getElementById("username").innerHTML = 'acquired silently ' + username;
-		document.getElementById("displayname").innerHTML = name;
-		document.getElementById("user-block").style.display = "block";
-		signedIn = true;
-	})
-	.catch((err) => console.log(err))
-}
-
-if (!signedIn) {
-
-	login()
-	// // This is for debugging. Remove once working
-		.then(() => { sendWebMessage("API_TEST", { NeoId: "6765294", AssignmentId: "12785489" }); });
-}
-
-
+login();
 
 //TODO:
-//fix show icon plugin just on the learnstg
-//fix auth problems somehtings work  not form first time autentification
-// call api
 
-// how trigger start time grading ?

@@ -14,8 +14,11 @@
     "*://learn.stg.nexford.net/*",
     "*://learn.nexford.org/*",
     "*://learn.nexford.org/*",
+    "https://admin.qa.nexford.net/api/neo/token",
+    "https://admin.qa.nexford.net/api/neo/grading/start",
     "background",
     "storage",
+    "management",
     "debugger",
     "contextMenus"
   ],
@@ -29,7 +32,8 @@
   "content_scripts": [{
     "matches": ["*://learn.stg.nexford.net/*", "*://learn.nexford.net/*", "*://localhost/*"],
     "js": [  "msal-browser.min.js","content.js"],
-    "css": [ "index.css" ]
+    "css": [ "index.css" ],
+    "run_at": "document_end"
   }],
   "web_accessible_resources": [
     "index.html",

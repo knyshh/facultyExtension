@@ -16,71 +16,33 @@ function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
 		console.log('cant get params');
 	}
 }
-// const dataFromPage = GetParams(location.href);
+const pageData = GetParams(location.href);
+console.log('pageData', pageData);
 
-chrome.storage.local.remove('Grading');
-
-// chrome.storage.local.get('BearerToken', function(data) {
-// 	console.log('from local storage token',data.BearerToken);
-// });
-
-///new instance !!!  and new redirect url  ?
-// const redirect = 'https://inpncpppbajgklekajknpmmibgdpcnad.chromiumapp.org';
-
-let msalInstanceContent = new msal.PublicClientApplication({
-	auth: {
-		authority: "https://login.microsoftonline.com/bdf1795a-c7bb-4599-bac9-f8d3335bef69",
-		clientId: "22473745-b0f0-43af-98c1-eea2ab47088e",
-		redirectUri: "https://inpncpppbajgklekajknpmmibgdpcnad.chromiumapp.org",
-		postLogoutRedirectUri: "https://inpncpppbajgklekajknpmmibgdpcnad.chromiumapp.org"
-	},
-	cache: {
-		cacheLocation: "localStorage"
-	}
-});
-console.log('msal', msalInstanceContent);
-console.log('msal.getAllAccounts', msalInstanceContent.getAllAccounts()[0]); //undefined
-
-const getBearerToken = async (account) => {
-	if (account) {
-		const tokenRequest = {
-			scopes: ["api://nxutestadmin/user_impersonation"],
-			account: account
-		};
-		try {
-			const response = msalInstanceContent.acquireTokenSilent(tokenRequest);
-			return response.accessToken;
-		} catch (error) {
-			if (error.name === 'InteractionRequiredAuthError') {
-				// msalInstance.acquireTokenRedirect(tokenRequest);
-				console.log('InteractionRequiredAuthError');
-			}
-			throw error;
+//check if grader on grading page and dont have token show message
+chrome.storage.local.get('token', (result) => {
+	const pageUrl = location.href;
+	console.log('page web token',result.token);
+	if (pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade')) {
+		if(result.token && result.token.length > 1) {
+			chrome.runtime.sendMessage( { type: "GRADING_START" , data: ({ NeoId: "6765294", AssignmentId: "12785489" })} , response => console.log('sendWebMessage success stading start'));
+		}
+		else {
+			alert('please login in extension before grading');
 		}
 	}
-	throw new Error('Not Authenticated');
-};
 
-async function sendMessage(account) {
-	const token = await getBearerToken(account);
-	console.log('test token',token);
-}
-chrome.storage.local.get('Accounts', function(data) {
-	console.log('accounts',data);
-	sendMessage(data);
 });
+
 
 window.addEventListener('click', function (e) {
 	if (e.target.tagName == "A" && e.target.classList.toString().indexOf('save-thread-comment') > -1) {
-		chrome.storage.local.set({ 'Grading': 'end' }, function() {});
-		chrome.runtime.sendMessage( { type: "API_TEST" , data: (GetParams(location.href))} , response => console.log('sendWebMessage success',response));
-		console.log('API_TEST: clicked "comment" button');
+		chrome.runtime.sendMessage( { type: "GRADING_END" , data: ({ NeoId: "6765294", AssignmentId: "12785489" })} , response => console.log('sendWebMessage success',response));
+		console.log('GRADING_END: clicked "comment" button');
 	}
 	else if (e.target.tagName == "A" && e.target.name == 'commit' && e.target.classList.toString().indexOf('disabled') === -1) {
-
-		chrome.storage.local.set({ 'Grading': 'end' }, function() {});
-		chrome.runtime.sendMessage( { type: "API_TEST" , data:  (GetParams(location.href))} , response => console.log('sendWebMessage success',response));
-		console.log('API_TEST: clicked "save" botton');
+		chrome.runtime.sendMessage( { type: "GRADING_END" , data: ({ NeoId: "6765294", AssignmentId: "12785489" })} , response => console.log('sendWebMessage success',response));
+		console.log('GRADING_END: clicked "save" botton');
 	}
 
 }, false);
