@@ -1,11 +1,11 @@
 console.log('content script starting');
 
 function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
-	if(pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade')) {
+	if(pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade' && 'to_grade=true')) {
 		const AssignmentId =  pageUrl.substring(pageUrl.lastIndexOf('/') + 1, pageUrl.indexOf('?'));
 		const studentParamFromUrl = pageUrl.split('student=')[1].toString();
 		const studentId = studentParamFromUrl.substring(0, studentParamFromUrl.indexOf('&'));
-
+		console.log('studentId, AssigmentId', studentId ,AssignmentId);
 		return {
 			NeoId: studentId,
 			AssigmentId: AssignmentId
@@ -20,17 +20,15 @@ function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
 chrome.storage.local.get('token', (result) => {
 	const pageUrl = location.href;
 	const data = GetParams(location.href);
-	if (pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade')) {
+	if (pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade' && 'to_grade=true')) {
 		if(result.token && result.token.length > 1) {
 			chrome.runtime.sendMessage( { type: "GRADING_START" , data } , response => console.log('GRADING_START'));
-			chrome.runtime.reload();
 		}
 		else {
 			alert('please login in extension before grading');
 		}
 	}
 });
-
 
 window.addEventListener('click', function (e) {
 	const data = GetParams(location.href);

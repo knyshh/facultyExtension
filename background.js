@@ -42,18 +42,24 @@ chrome.runtime.onInstalled.addListener(function(details){
 // });
 
 async function fetchPost(path, data, sendResponse) {
-
 	return new Promise((resolve, reject) => {
 
 		chrome.storage.local.get('token', (result) => {
 			const token = result.token;
 			data = { ...data, Token: token };
-			fetch(`https://admin.qa.nexford.net${path}`, {
+			fetch(`https://admin.stg.nexford.net${path}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
-			}).then(() => {
-				sendResponse({message: 'success', success: true });
+			}).then((response) => {
+				console.log(response )
+				if(!response.ok) {
+					alert('Server error in NXU Faculty Helper');
+				}
+				else {
+					sendResponse({message: 'success', success: true });
+				}
+
 				resolve();
 			})
 				.catch(error => {
@@ -86,7 +92,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			const dataTest = { NeoId: "6765294", AssignmentId: "12785489" };
 			const dataWebPage = message.data;
 			console.log('message.data', dataWebPage, dataTest, typeof dataWebPage.NeoId, typeof dataTest.NeoId);
-			fetchPost('/api/analytics/neo/grading/start', dataWebPage, sendResponse);
+			fetchPost('/api/analytics/neo/grading/start', dataTest, sendResponse);
+
 			return;
 		}
 

@@ -9,7 +9,8 @@ const redirectUri = typeof chrome !== "undefined" && chrome.identity ?
 let msalInstance = new msal.PublicClientApplication({
 	auth: {
 		authority: "https://login.microsoftonline.com/bdf1795a-c7bb-4599-bac9-f8d3335bef69",
-		clientId: "22473745-b0f0-43af-98c1-eea2ab47088e",
+		//clientId: "22473745-b0f0-43af-98c1-eea2ab47088e",//11dfef02-9f4a-4642-a970-527ef297edd0
+		clientId: "11dfef02-9f4a-4642-a970-527ef297edd0",
 		redirectUri,
 		postLogoutRedirectUri: redirectUri
 	},
@@ -42,7 +43,7 @@ async function login() {
 
 	const bearerToken = await getBearerToken();
 
-	let getTokenUrl = "https://admin.qa.nexford.net/api/neo/token";
+	let getTokenUrl = "https://admin.stg.nexford.net/api/neo/token";
 	chrome.storage.local.get('token', (result) => {
 		if (result && result.token) {
 			getTokenUrl += '/' + result.token;

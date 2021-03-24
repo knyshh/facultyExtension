@@ -17,6 +17,12 @@
     "https://admin.qa.nexford.net/api/analytics/neo/grading/",
     "https://admin.qa.nexford.net/api/neo/grading/start",
     "https://admin.qa.nexford.net/api/neo/grading/end",
+
+    "https://admin.stg.nexford.net/api/neo/token",
+    "https://admin.stg.nexford.net/api/analytics/neo/grading/",
+    "https://admin.stg.nexford.net/api/neo/grading/start",
+    "https://admin.stg.nexford.net/api/neo/grading/end",
+
     "background",
     "storage",
     "management",
