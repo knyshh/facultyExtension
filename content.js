@@ -1,7 +1,7 @@
 console.log('content script starting');
 
 function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
-	if(pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade' && 'to_grade')) {
+	if(pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade') && pageUrl.includes('to_grade')) {
 		const AssignmentId =  pageUrl.substring(pageUrl.lastIndexOf('/') + 1, pageUrl.indexOf('?'));
 		const studentParamFromUrl = pageUrl.split('student=')[1].toString();
 		const studentId = studentParamFromUrl.substring(0, studentParamFromUrl.indexOf('&'));
@@ -20,7 +20,7 @@ function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
 chrome.storage.local.get('token', (result) => {
 	const pageUrl = location.href;
 	const data = GetParams(location.href);
-	if (pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade' && 'to_grade')) {
+	if (pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade') && pageUrl.includes('to_grade')) {
 		if(result.token && result.token.length > 1) {
 			chrome.runtime.sendMessage( { type: "GRADING_START" , data } , response => console.log('GRADING_START'));
 		}

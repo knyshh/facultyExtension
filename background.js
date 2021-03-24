@@ -52,7 +52,6 @@ async function fetchPost(path, data, sendResponse) {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)
 			}).then((response) => {
-				console.log(response )
 				if(!response.ok) {
 					alert('Server error in NXU Faculty Helper');
 				}
