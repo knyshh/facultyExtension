@@ -20,7 +20,7 @@ function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
 chrome.storage.local.get('token', (result) => {
 	const pageUrl = location.href;
 	const data = GetParams(location.href);
-	if (pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade' && 'to_grade=true')) {
+	if (pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade' && 'to_grade')) {
 		if(result.token && result.token.length > 1) {
 			chrome.runtime.sendMessage( { type: "GRADING_START" , data } , response => console.log('GRADING_START'));
 		}
