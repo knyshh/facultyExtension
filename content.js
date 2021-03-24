@@ -1,7 +1,7 @@
 console.log('content script starting');
 
 function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
-	if(pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade' && 'to_grade=true')) {
+	if(pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade' && 'to_grade')) {
 		const AssignmentId =  pageUrl.substring(pageUrl.lastIndexOf('/') + 1, pageUrl.indexOf('?'));
 		const studentParamFromUrl = pageUrl.split('student=')[1].toString();
 		const studentId = studentParamFromUrl.substring(0, studentParamFromUrl.indexOf('&'));

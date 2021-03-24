@@ -59,7 +59,6 @@ async function fetchPost(path, data, sendResponse) {
 				else {
 					sendResponse({message: 'success', success: true });
 				}
-
 				resolve();
 			})
 				.catch(error => {
