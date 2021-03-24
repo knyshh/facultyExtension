@@ -13,9 +13,10 @@
     "webRequestBlocking",
     "*://learn.stg.nexford.net/*",
     "*://learn.nexford.org/*",
-    "*://learn.nexford.org/*",
     "https://admin.qa.nexford.net/api/neo/token",
+    "https://admin.qa.nexford.net/api/analytics/neo/grading/",
     "https://admin.qa.nexford.net/api/neo/grading/start",
+    "https://admin.qa.nexford.net/api/neo/grading/end",
     "background",
     "storage",
     "management",
@@ -30,7 +31,7 @@
     "default_popup": "index.html"
   },
   "content_scripts": [{
-    "matches": ["*://learn.stg.nexford.net/*", "*://learn.nexford.net/*", "*://localhost/*"],
+    "matches": ["*://learn.stg.nexford.net/*", "*://learn.nexford.net/*"],
     "js": [  "msal-browser.min.js","content.js"],
     "css": [ "index.css" ],
     "run_at": "document_end"

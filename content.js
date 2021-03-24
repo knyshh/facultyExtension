@@ -6,42 +6,41 @@ function GetParams(pageUrl) { //AssignmentId  and studentId I get from the url
 		const studentParamFromUrl = pageUrl.split('student=')[1].toString();
 		const studentId = studentParamFromUrl.substring(0, studentParamFromUrl.indexOf('&'));
 
-		const pageInfo = {
+		return {
 			NeoId: studentId,
 			AssigmentId: AssignmentId
 		};
-		return pageInfo;
 	}
 	else {
 		console.log('cant get params');
 	}
 }
-const pageData = GetParams(location.href);
-console.log('pageData', pageData);
 
 //check if grader on grading page and dont have token show message
 chrome.storage.local.get('token', (result) => {
 	const pageUrl = location.href;
-	console.log('page web token',result.token);
+	const data = GetParams(location.href);
 	if (pageUrl && pageUrl.includes('teacher_dropbox_assignment/grade')) {
 		if(result.token && result.token.length > 1) {
-			chrome.runtime.sendMessage( { type: "GRADING_START" , data: ({ NeoId: "6765294", AssignmentId: "12785489" })} , response => console.log('sendWebMessage success stading start'));
+			chrome.runtime.sendMessage( { type: "GRADING_START" , data } , response => console.log('GRADING_START'));
+			chrome.runtime.reload();
 		}
 		else {
 			alert('please login in extension before grading');
 		}
 	}
-
 });
 
 
 window.addEventListener('click', function (e) {
+	const data = GetParams(location.href);
+
 	if (e.target.tagName == "A" && e.target.classList.toString().indexOf('save-thread-comment') > -1) {
-		chrome.runtime.sendMessage( { type: "GRADING_END" , data: ({ NeoId: "6765294", AssignmentId: "12785489" })} , response => console.log('sendWebMessage success',response));
+		chrome.runtime.sendMessage( { type: "GRADING_END" , data } , () => console.log('GRADING_END message success'));
 		console.log('GRADING_END: clicked "comment" button');
 	}
 	else if (e.target.tagName == "A" && e.target.name == 'commit' && e.target.classList.toString().indexOf('disabled') === -1) {
-		chrome.runtime.sendMessage( { type: "GRADING_END" , data: ({ NeoId: "6765294", AssignmentId: "12785489" })} , response => console.log('sendWebMessage success',response));
+		chrome.runtime.sendMessage( { type: "GRADING_END" , data } , () => console.log('GRADING_END message success'));
 		console.log('GRADING_END: clicked "save" botton');
 	}
 

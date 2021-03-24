@@ -1,6 +1,6 @@
 console.log('auth');
 
-//chrome.runtime.reload(); TODO: !
+//TODO chrome.runtime.reload();
 // Set the redirect URI to the chromiumapp.com provided by Chromium
 const redirectUri = typeof chrome !== "undefined" && chrome.identity ?
 	chrome.identity.getRedirectURL() :
@@ -41,7 +41,6 @@ async function login() {
 	document.getElementById("username").innerHTML = `${account.name} (${account.username})`;
 
 	const bearerToken = await getBearerToken();
-	console.log('bearer token', bearerToken);
 
 	let getTokenUrl = "https://admin.qa.nexford.net/api/neo/token";
 	chrome.storage.local.get('token', (result) => {
@@ -53,18 +52,10 @@ async function login() {
 			.then(json => {
 				chrome.storage.local.set({ 'token': json.Token }, function() {
 					document.getElementById("statusinfo").innerHTML = 'Installation complete';
-
-					// FOR DEBUG ONLY 👇🏻
-					const data = { NeoId: "6765294", AssignmentId: "12785489" };
-					chrome.runtime.sendMessage({ type: "API_TEST", data });
-					// FOR DEBUG ONLY 👆🏻
-					console.log('token!!', result.token)
-
-					console.log('new token is set');
 				});
 			})
 			.catch(error => {
-				alert(JSON.stringify(error))
+				console.log(JSON.stringify(error))
 			});
 	});
 }
@@ -110,7 +101,7 @@ const getBearerToken = async () => {
 		};
 		try {
 			const response = await msalInstance.acquireTokenSilent(tokenRequest);
-			chrome.storage.local.set({ 'BearerToken': response.accessToken }, () => {console.log('BearerToken set')});
+			chrome.storage.local.set({ 'BearerToken': response.accessToken }, function() {});
 			return response.accessToken;
 		} catch (error) {
 			if (error.name === 'InteractionRequiredAuthError') {
@@ -124,6 +115,3 @@ const getBearerToken = async () => {
 };
 
 login();
-
-//TODO:
-
