@@ -90,7 +90,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			const dataTest = { NeoId: "6765294", AssignmentId: "12785489" };
 			const dataWebPage = message.data;
 			console.log('message.data', dataWebPage, dataTest, typeof dataWebPage.NeoId, typeof dataTest.NeoId);
-			fetchPost('/api/analytics/neo/grading/start', dataTest, sendResponse);
+			fetchPost('/api/analytics/neo/grading/start', dataWebPage, sendResponse);
 
 			return;
 		}

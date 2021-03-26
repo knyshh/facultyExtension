@@ -97,7 +97,7 @@ async function launchWebAuthFlow(url) {
 const getBearerToken = async () => {
 	if (msalInstance.getAllAccounts()[0]) {
 		const tokenRequest = {
-			scopes: [ "api://nxutestadmin/user_impersonation" ], // from admin-ui test and this and this
+			scopes: [ "api://nxustgadmin/user_impersonation" ], // from admin-ui test and this and this
 			account: msalInstance.getAllAccounts()[0]
 		};
 		try {
